@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Converter</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Main container */
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        /* Form group styling */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        /* Input field styling */
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Radio button container */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Custom radio button styling */
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .radio-option label:hover {
+            border-color: #667eea;
+        }
+
+        /* Convert button */
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result display */
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .result-container.show {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-text {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .result-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Error message */
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .radio-option {
+                min-width: 100px;
+            }
+
+            .result-text {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌡️ Temperature Converter</h1>
+        <p class="subtitle">Convert between Celsius, Fahrenheit, and Kelvin</p>
+
+        <!-- Temperature input field -->
+        <div class="form-group">
+            <label for="temperature-input">Enter Temperature:</label>
+            <input
+                type="number"
+                id="temperature-input"
+                placeholder="Enter a number (e.g., 25, -10, 98.6)"
+                step="any"
+            >
+            <div class="error-message" id="error-message">Please enter a valid number!</div>
+        </div>
+
+        <!-- Input unit selection -->
+        <div class="form-group">
+            <label>From:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="from-celsius" name="from-unit" value="celsius" checked>
+                    <label for="from-celsius">Celsius (°C)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="from-fahrenheit" name="from-unit" value="fahrenheit">
+                    <label for="from-fahrenheit">Fahrenheit (°F)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="from-kelvin" name="from-unit" value="kelvin">
+                    <label for="from-kelvin">Kelvin (K)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output unit selection -->
+        <div class="form-group">
+            <label>To:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="to-celsius" name="to-unit" value="celsius">
+                    <label for="to-celsius">Celsius (°C)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="to-fahrenheit" name="to-unit" value="fahrenheit" checked>
+                    <label for="to-fahrenheit">Fahrenheit (°F)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="to-kelvin" name="to-unit" value="kelvin">
+                    <label for="to-kelvin">Kelvin (K)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Convert button -->
+        <button class="convert-btn" onclick="convertTemperature()">Convert Temperature</button>
+
+        <!-- Result display area -->
+        <div class="result-container" id="result-container">
+            <div class="result-label">Result will appear here</div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Main function to convert temperature between different units
+         * This function is called when the user clicks the Convert button
+         */
+        function convertTemperature() {
+            // Get the input value from the text field
+            const inputValue = document.getElementById('temperature-input').value;
+            const errorMessage = document.getElementById('error-message');
+            const resultContainer = document.getElementById('result-container');
+
+            // Validate input: Check if the input is empty or not a valid number
+            if (inputValue === '' || isNaN(inputValue)) {
+                // Show error message if validation fails
+                errorMessage.classList.add('show');
+                resultContainer.innerHTML = '<div class="result-label">Please enter a valid temperature</div>';
+                return; // Exit the function early
+            }
+
+            // Hide error message if validation passes
+            errorMessage.classList.remove('show');
+
+            // Convert input string to a number (supports decimals and negatives)
+            const temperature = parseFloat(inputValue);
+
+            // Get the selected input unit (from which unit we're converting)
+            const fromUnit = document.querySelector('input[name="from-unit"]:checked').value;
+
+            // Get the selected output unit (to which unit we're converting)
+            const toUnit = document.querySelector('input[name="to-unit"]:checked').value;
+
+            // Check if user selected the same unit for input and output
+            if (fromUnit === toUnit) {
+                // No conversion needed - display the same value
+                displayResult(temperature, toUnit);
+                return;
+            }
+
+            // Perform the conversion
+            let result = performConversion(temperature, fromUnit, toUnit);
+
+            // Display the result
+            displayResult(result, toUnit);
+        }
+
+        /**
+         * Performs the actual temperature conversion calculation
+         * @param {number} temp - The temperature value to convert
+         * @param {string} from - The unit we're converting from
+         * @param {string} to - The unit we're converting to
+         * @returns {number} - The converted temperature value
+         */
+        function performConversion(temp, from, to) {
+            // First, convert the input temperature to Celsius (our base unit)
+            let celsius;
+
+            if (from === 'celsius') {
+                celsius = temp;
+            } else if (from === 'fahrenheit') {
+                // Formula: (°F - 32) × 5/9 = °C
+                celsius = (temp - 32) * 5 / 9;
+            } else if (from === 'kelvin') {
+                // Formula: K - 273.15 = °C
+                celsius = temp - 273.15;
+            }
+
+            // Now convert from Celsius to the target unit
+            let result;
+
+            if (to === 'celsius') {
+                result = celsius;
+            } else if (to === 'fahrenheit') {
+                // Formula: (°C × 9/5) + 32 = °F
+                result = (celsius * 9 / 5) + 32;
+            } else if (to === 'kelvin') {
+                // Formula: °C + 273.15 = K
+                result = celsius + 273.15;
+            }
+
+            // Round to 2 decimal places for cleaner display
+            return Math.round(result * 100) / 100;
+        }
+
+        /**
+         * Displays the conversion result on the page
+         * @param {number} value - The converted temperature value
+         * @param {string} unit - The unit of the result
+         */
+        function displayResult(value, unit) {
+            const resultContainer = document.getElementById('result-container');
+
+            // Get the symbol for the unit
+            let unitSymbol = '';
+            let unitName = '';
+
+            if (unit === 'celsius') {
+                unitSymbol = '°C';
+                unitName = 'Celsius';
+            } else if (unit === 'fahrenheit') {
+                unitSymbol = '°F';
+                unitName = 'Fahrenheit';
+            } else if (unit === 'kelvin') {
+                unitSymbol = 'K';
+                unitName = 'Kelvin';
+            }
+
+            // Update the result container with the converted value
+            resultContainer.innerHTML = `
+                <div class="result-text">${value} ${unitSymbol}</div>
+                <div class="result-label">${unitName}</div>
+            `;
+
+            // Add animation class for smooth appearance
+            resultContainer.classList.add('show');
+
+            // Remove animation class after animation completes (for future conversions)
+            setTimeout(() => {
+                resultContainer.classList.remove('show');
+            }, 400);
+        }
+
+        /**
+         * Allow conversion when user presses Enter key in the input field
+         */
+        document.getElementById('temperature-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                convertTemperature();
+            }
+        });
+
+        /**
+         * Clear error message when user starts typing
+         */
+        document.getElementById('temperature-input').addEventListener('input', function() {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
